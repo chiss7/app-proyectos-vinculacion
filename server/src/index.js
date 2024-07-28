@@ -11,7 +11,7 @@ app.use(morgan("dev"));
 app.use(express.json());
 
 // routes
-app.use("/projects", projectRoutes);
+app.use("/api/projects", projectRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
