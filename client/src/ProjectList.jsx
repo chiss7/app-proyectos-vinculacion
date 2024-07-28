@@ -80,17 +80,12 @@ function ProjectList() {
       </div>
 
       {isModalOpen && (
-        <Modal onClose={handleCloseModal}>
-          <h2>Detalles del Proyecto</h2>
+        <Modal onClose={handleCloseModal}>          
           <p><strong>ID:</strong> {selectedProject.id}</p>
           <p><strong>Nombre del Programa:</strong> {selectedProject.nombre_programa}</p>
           <p><strong>Coordinador:</strong> {selectedProject.coordinador_programa}</p>
           <p><strong>Nombre del Proyecto:</strong> {selectedProject.nombre_proyecto}</p>
-          <p><strong>Objetivo General:</strong> {selectedProject.objetivo_general}</p>
-          {/* Agrega más campos según sea necesario */}
-          <button className="btn btn-secondary mt-2" onClick={handleCloseModal}>
-            Cerrar
-          </button>
+          <p><strong>Objetivo General:</strong> {selectedProject.objetivo_general}</p>          
         </Modal>
       )}
     </div>
