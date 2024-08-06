@@ -5,8 +5,11 @@ const router = Router();
 
 router.get("/", ProjectController.getProjects);
 router.post("/", ProjectController.createProject);
+router.get("/all", ProjectController.getAllInfoProjects);
 router.get("/:id", ProjectController.getProjectById);
+
 router.get("/all-info/:id", ProjectController.getAllInfoProjectById);
+
 router.delete("/:id", ProjectController.deleteProjectById);
 router.patch("/:id", ProjectController.updateProjectById);
 

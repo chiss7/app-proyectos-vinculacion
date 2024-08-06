@@ -42,6 +42,17 @@ const ProjectController = {
       res.status(500).json({ message: "Error getting project." });
     }
   },
+  getAllInfoProjects: async (req, res) => {
+    try {
+      const { rows } = await pool.query(
+        "SELECT * FROM get_all_info_projects() AS info_projects"
+      );
+      res.status(200).json(rows[0].info_projects);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error getting project." });
+    }
+  },
   createProject: (req, res) => {
     res.send("Create project!");
   },
@@ -49,12 +60,11 @@ const ProjectController = {
     try {
       await pool.query("BEGIN");
       const result = await pool.query(
-        "SELECT delete_proyecto_by_id($1) AS proyecto_deleted",
+        "SELECT delete_proyecto_by_id($1) AS project_deleted",
         [req.params.id]
       );
       await pool.query("COMMIT");
-      console.log(result);
-      if (result.rows[0].proyecto_deleted) {
+      if (result.rows[0].project_deleted) {
         res.sendStatus(204);
       } else {
         res.status(404).json({ message: "Project not found." });
