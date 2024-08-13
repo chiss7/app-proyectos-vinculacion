@@ -1,143 +1,14 @@
-// import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-// import { useEffect, useRef, useState } from "react";
-// import Title from "./Title";
-// import { Box, Button, Typography } from "@mui/material";
-// import Link from "@mui/material/Link";
-
-// const Projects = () => {
-//   const [projects, setProjects] = useState([]);
-//   const [selectedProject, setSelectedProject] = useState({});
-//   const [isModalOpen, setIsModalOpen] = useState(false);
-//   const cacheRef = useRef({});
-//   const columns = [
-//     { field: 'proyecto_id', headerName: 'ID Proyecto', width: 150 },
-//     { field: 'nombre_proyecto', headerName: 'Nombre del Proyecto', width: 300 },
-//     { field: 'nombre_facultad', headerName: 'Nombre de la Facultad', width: 300 },
-//     { field: 'nombre_parroquia', headerName: 'Parroquias', width: 300, renderCell: (params) => (
-//         <Box>
-//           {params.value.map((parroquia, index) => (
-//             <Typography key={index} variant="body2">
-//               {parroquia}
-//             </Typography>
-//           ))}
-//         </Box>
-//       )
-//     },
-//     { field: 'nombre_org_res_contraparte', headerName: 'Organización Contraparte', width: 300 },
-//     { field: 'responsables_contraparte', headerName: 'Responsables Contraparte', width: 300, renderCell: (params) => (
-//         <Box>
-//           {params.value.map((responsable, index) => (
-//             <Typography key={index} variant="body2">
-//               {responsable}
-//             </Typography>
-//           ))}
-//         </Box>
-//       )
-//     },
-//     {
-//       field: 'action',
-//       headerName: 'Acciones',
-//       width: 150,
-//       renderCell: (params) => (
-//         <Button
-//           variant="contained"
-//           color="primary"
-//           onClick={() => handleOpenModal(params.row)}
-//         >
-//           Ver Detalles
-//         </Button>
-//       ),
-//     },
-//   ];
-
-//   const handleOpenModal = (row) => {
-//     if (cacheRef.current[row.proyecto_id]) {
-//       setSelectedProject(cacheRef.current[row.proyecto_id]);
-//       setIsModalOpen(true);
-//     } else {
-//       fetch(`http://localhost:3000/api/projects/all-info/${row.proyecto_id}`)
-//         .then((response) => response.json())
-//         .then((data) => {
-//           cacheRef.current[row.proyecto_id] = data;
-//           setSelectedProject(data);
-//           setIsModalOpen(true);
-//         })
-//         .catch((error) =>
-//           console.error("Error fetching project details:", error)
-//         );
-//     }
-//   };
-
-//   const handleCloseModal = () => {
-//     setSelectedProject({});
-//     setIsModalOpen(false);
-//   };
-
-//   useEffect(() => {
-//     fetch('http://localhost:3000/api/projects/all')
-//       .then(response => response.json())
-//       .then(data => {
-//         const processedData = data.map((project, index) => {
-//           const nombre_facultad = project.carreras_info
-//             ? project.carreras_info.map(carrera => carrera.nombre_facultad).join(', ')
-//             : '';
-//           const nombre_parroquia = project.ubicaciones_info
-//             ? project.ubicaciones_info.flatMap(ubicacion =>
-//                 ubicacion.parroquias ? ubicacion.parroquias.map(parroquia => parroquia.nombre_parroquia) : []
-//               )
-//             : [];
-//           const nombre_org_res_contraparte = project.org_res_contraparte
-//             ? project.org_res_contraparte.map(org => org.nombre).join(', ')
-//             : '';
-//           const responsables_contraparte = project.org_res_contraparte
-//             ? project.org_res_contraparte.flatMap(org =>
-//                 org.responsables ? org.responsables.map(responsable => responsable.nombres) : []
-//               )
-//             : [];
-
-//           return {
-//             id: index, // Asignar un id único basado en el índice
-//             proyecto_id: project.proyecto_info?.proyecto_id,
-//             nombre_proyecto: project.proyecto_info?.nombre_proyecto,
-//             nombre_facultad,
-//             nombre_parroquia,
-//             nombre_org_res_contraparte,
-//             responsables_contraparte,
-//           };
-//         });
-//         setProjects(processedData);
-//       })
-//       .catch(error => console.error('Error fetching projects: ', error));
-//   }, []);
-
-//   return (
-//     <>
-//       <Title>Proyectos</Title>
-//       <DataGrid
-//         columns={columns}
-//         rows={projects}
-//         initialState={{
-//           pagination: {
-//             paginationModel: { page: 0, pageSize: 10 },
-//           },
-//         }}
-//         pageSizeOptions={[10, 20]}
-//         checkboxSelection
-//         getRowHeight={() => 'auto'}
-//         slots={{ toolbar: GridToolbar }}
-//       />
-//     </>
-//   );
-// };
-
-// export default Projects;
-
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { useEffect, useRef, useState } from "react";
-import Title from "./Title";
-import { Button, Link } from "@mui/material";
+import { Box, Button, Link } from "@mui/material";
+import LoadingButton from "@mui/lab/LoadingButton";
+import CircularProgress from '@mui/material/CircularProgress';
 import PropTypes from "prop-types";
-import Modal from "../Modal";
+import Modal from "./Modal";
+import PltPrincipal from "./pltPrincipal";
+import "../styles.css";
+import axios from "axios";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
 // Componente ExpandableCell para manejar contenido expandible en celdas
 const ExpandableCell = ({ value }) => {
@@ -166,8 +37,15 @@ const ExpandableCell = ({ value }) => {
 const Projects = () => {
   const [projects, setProjects] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState({});
+  const [selectedProjectId, setSelectedProjectId] = useState("");
   const cacheRef = useRef({});
+
+  const [isProyectsLoading, setIsProjectsLoading] = useState(false);
+  const [isDeleteLoading, setIsDeleteLoading] = useState(false);
+  const [isProjectInfoLoading, setIsProjectInfoLoading] = useState(false);
+
   // Definición de las columnas, incluyendo las celdas expandibles
   const columns = [
     { field: "proyecto_id", headerName: "ID Proyecto", width: 100 },
@@ -206,25 +84,35 @@ const Projects = () => {
     {
       field: "action",
       headerName: "Acciones",
-      width: 150,
+      width: 300,
       renderCell: (params) => (
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => handleOpenModal(params.row)}
-        >
-          Ver Detalles
-        </Button>
+        <Box sx={{ display: "flex", gap: 2 }}>
+          <LoadingButton
+            loading={isProjectInfoLoading}
+            variant="contained"
+            color="primary"
+            onClick={() => handleOpenModal(params.row)}
+          >
+            Ver Detalles
+          </LoadingButton>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => handleOpenDeleteProjectModal(params.row)}
+          >
+            Borrar Proyecto
+          </Button>
+        </Box>
       ),
     },
   ];
 
-  // Función de manejo de clics en los botones de acción
   const handleOpenModal = (row) => {
     if (cacheRef.current[row.proyecto_id]) {
       setSelectedProject(cacheRef.current[row.proyecto_id]);
       setIsModalOpen(true);
     } else {
+      setIsProjectInfoLoading(true);
       fetch(`http://localhost:3000/api/projects/all-info/${row.proyecto_id}`)
         .then((response) => response.json())
         .then((data) => {
@@ -234,7 +122,8 @@ const Projects = () => {
         })
         .catch((error) =>
           console.error("Error fetching project details: ", error)
-        );
+        )
+        .finally(() => setIsProjectInfoLoading(false));
     }
   };
 
@@ -243,8 +132,36 @@ const Projects = () => {
     setIsModalOpen(false);
   };
 
+  const handleOpenDeleteProjectModal = (row) => {
+    setSelectedProjectId(row.proyecto_id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDeleteProject = async (id) => {
+    try {
+      setIsDeleteLoading(true);
+      const res = await axios.delete(
+        `http://localhost:3000/api/projects/${id}`
+      );
+      if (res.status === 204) {
+        setProjects(projects.filter((project) => project.proyecto_id !== id));
+      }
+      setIsDeleteModalOpen(false);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsDeleteLoading(false);
+    }
+  };
+
+  const handleCloseDeleteProjectModal = () => {
+    setSelectedProjectId("");
+    setIsDeleteModalOpen(false);
+  };
+
   // Efecto para cargar datos desde la API
   useEffect(() => {
+    setIsProjectsLoading(true);
     fetch("http://localhost:3000/api/projects/all")
       .then((response) => response.json())
       .then((data) => {
@@ -286,37 +203,40 @@ const Projects = () => {
         });
         setProjects(processedData);
       })
-      .catch((error) => console.error("Error fetching projects: ", error));
+      .catch((error) => console.error("Error fetching projects: ", error))
+      .finally(() => setIsProjectsLoading(false));
   }, []);
 
   return (
-    <>
-      <Title>Proyectos</Title>
-      <DataGrid
-        columns={columns}
-        rows={projects}
-        initialState={{
-          pagination: {
-            paginationModel: { page: 0, pageSize: 10 },
-          },
-        }}
-        pageSizeOptions={[10, 20]}
-        checkboxSelection
-        getRowHeight={() => "auto"}
-        getEstimatedRowHeight={() => 100}
-        slots={{ toolbar: GridToolbar }}
-        sx={{
-          "&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell": {
-            py: 1,
-          },
-          "&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell": {
-            py: "15px",
-          },
-          "&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell": {
-            py: "22px",
-          },
-        }}
-      />
+    <PltPrincipal>
+      {isProyectsLoading ? (
+        <CircularProgress />
+      ) : (
+        <DataGrid
+          columns={columns}
+          rows={projects}
+          initialState={{
+            pagination: {
+              paginationModel: { page: 0, pageSize: 4 },
+            },
+          }}
+          pageSizeOptions={[4, 10, 20]}
+          getRowHeight={() => "auto"}
+          getEstimatedRowHeight={() => 100}
+          slots={{ toolbar: GridToolbar }}
+          sx={{
+            "&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell": {
+              py: 1,
+            },
+            "&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell": {
+              py: "15px",
+            },
+            "&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell": {
+              py: "22px",
+            },
+          }}
+        />
+      )}
 
       {isModalOpen && (
         <Modal onClose={handleCloseModal}>
@@ -467,7 +387,16 @@ const Projects = () => {
           </div>
         </Modal>
       )}
-    </>
+
+      {isDeleteModalOpen && (
+        <ConfirmDeleteModal
+          onClose={handleCloseDeleteProjectModal}
+          onConfirm={handleConfirmDeleteProject}
+          projectId={selectedProjectId}
+          loading={isDeleteLoading}
+        />
+      )}
+    </PltPrincipal>
   );
 };
 
