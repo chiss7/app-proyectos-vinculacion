@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { gsap } from 'gsap';
 import axios from 'axios';
-import './Login.css'; // Asegúrate de que este archivo CSS esté adaptado de tus estilos JSP
+import '../assets/css/Login.css';
 import { useNavigate } from 'react-router-dom';
 
 function Login() {

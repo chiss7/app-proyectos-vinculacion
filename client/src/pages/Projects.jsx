@@ -2,13 +2,13 @@ import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { useEffect, useRef, useState } from "react";
 import { Box, Button, Link } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
-import CircularProgress from '@mui/material/CircularProgress';
+import CircularProgress from "@mui/material/CircularProgress";
 import PropTypes from "prop-types";
-import Modal from "./Modal";
-import PltPrincipal from "./pltPrincipal";
+import Modal from "../components/Modal";
+import PltPrincipal from "../components/pltPrincipal";
 import "../styles.css";
 import axios from "axios";
-import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 
 // Componente ExpandableCell para manejar contenido expandible en celdas
 const ExpandableCell = ({ value }) => {
@@ -27,7 +27,7 @@ const ExpandableCell = ({ value }) => {
           sx={{ fontSize: "inherit" }}
           onClick={() => setExpanded(!expanded)}
         >
-          {expanded ? "ver menos" : "ver más"}
+          {expanded ? "Ver menos" : "... Ver más"}
         </Link>
       )}
     </div>
@@ -53,7 +53,97 @@ const Projects = () => {
       field: "nombre_proyecto",
       headerName: "Nombre del Proyecto",
       width: 250,
-      renderCell: (params) => <ExpandableCell value={params.value} />,
+      renderCell: (params) => (
+        <>
+          {params.value === null ? (
+            "No hay nombre del proyecto"
+          ) : (
+            <ExpandableCell value={params.value} />
+          )}
+        </>
+      ),
+    },
+    {
+      field: "nombre_programa",
+      headerName: "Nombre Programa",
+      width: 250,
+      renderCell: (params) => (
+        <>
+          {params.value === null ? (
+            "No hay nombre programa"
+          ) : (
+            <ExpandableCell value={params.value} />
+          )}
+        </>
+      ),
+    },
+    {
+      field: "objetivo_general",
+      headerName: "Objetivo General",
+      width: 250,
+      renderCell: (params) => (
+        <>
+          {params.value === null ? (
+            "No hay Objetivo General"
+          ) : (
+            <ExpandableCell value={params.value} />
+          )}
+        </>
+      ),
+    },
+    {
+      field: "objetivos_especificos",
+      headerName: "Objetivos Específicos",
+      width: 250,
+      renderCell: (params) => (
+        <>
+          {params.value === null ? (
+            "No hay Objetivos Específicos"
+          ) : (
+            <ExpandableCell value={params.value} />
+          )}
+        </>
+      ),
+    },
+    {
+      field: "nombre_proceso_gestion",
+      headerName: "Proceso Gestión",
+      width: 250,
+      renderCell: (params) => (
+        <>{params.value === null ? "No hay duración" : params.value}</>
+      ),
+    },
+    {
+      field: "duracion",
+      headerName: "Duración (meses)",
+      width: 150,
+      renderCell: (params) => (
+        <>{params.value === null ? "No hay duración" : params.value}</>
+      ),
+    },
+    {
+      field: "presupuesto_por_mes",
+      headerName: "Presupuesto por Semestre",
+      width: 200,
+      renderCell: (params) => (
+        <>{params.value === null ? "No hay presupuesto" : params.value}</>
+      ),
+    },
+    {
+      field: "fecha_inicio",
+      headerName: "Fecha de Inicio",
+      width: 200,
+      renderCell: (params) => (
+        <>{params.value === null ? "No hay información" : params.value}</>
+      ),
+    },
+    {
+      field: "fecha_finalizacion",
+      headerName: "Fecha de Finalización",
+      width: 200,
+      renderCell: (params) => (
+        <>{params.value === null ? "No hay información" : params.value}</>
+      ),
     },
     {
       field: "nombre_facultad",
@@ -65,7 +155,13 @@ const Projects = () => {
       headerName: "Parroquias",
       width: 200,
       renderCell: (params) => (
-        <ExpandableCell value={params.value.join(", ")} />
+        <>
+          {params.value.length > 0 ? (
+            <ExpandableCell value={params.value.join(", ")} />
+          ) : (
+            "No hay parroquias"
+          )}
+        </>
       ),
     },
     {
@@ -78,7 +174,151 @@ const Projects = () => {
       headerName: "Responsables Contraparte",
       width: 300,
       renderCell: (params) => (
-        <ExpandableCell value={params.value.join(", ")} />
+        <>
+          {params.value.length > 0 ? (
+            <ExpandableCell value={params.value.join(", ")} />
+          ) : (
+            "No hay responsables contraparte"
+          )}
+        </>
+      ),
+    },
+    {
+      field: "cantidad_docentes",
+      headerName: "Cantidad Docentes",
+      width: 250,
+      renderCell: (params) => (
+        <>{params.value === null ? "No hay información" : params.value}</>
+      ),
+    },
+    {
+      field: "cantidad_estudiantes",
+      headerName: "Cantidad Estudiantes",
+      width: 250,
+      renderCell: (params) => (
+        <>{params.value === null ? "No hay información" : params.value}</>
+      ),
+    },
+    {
+      field: "beneficiarios_directos",
+      headerName: "Beneficiarios Directos",
+      width: 250,
+      renderCell: (params) => (
+        <>
+          {params.value === null ? (
+            "No hay beneficiarios directos"
+          ) : (
+            <ExpandableCell value={params.value} />
+          )}
+        </>
+      ),
+    },
+    {
+      field: "beneficiarios_indirectos",
+      headerName: "Beneficiarios Indirectos",
+      width: 250,
+      renderCell: (params) => (
+        <>
+          {params.value === null ? (
+            "No hay beneficiarios indirectos"
+          ) : (
+            <ExpandableCell value={params.value} />
+          )}
+        </>
+      ),
+    },
+    {
+      field: "antecedentes",
+      headerName: "Antecedentes",
+      width: 250,
+      renderCell: (params) => (
+        <>
+          {params.value === null ? (
+            "No hay antecedentes"
+          ) : (
+            <ExpandableCell value={params.value} />
+          )}
+        </>
+      ),
+    },
+    {
+      field: "metodologia",
+      headerName: "Metodología",
+      width: 250,
+      renderCell: (params) => (
+        <>
+          {params.value === null ? (
+            "No hay metodología"
+          ) : (
+            <ExpandableCell value={params.value} />
+          )}
+        </>
+      ),
+    },
+    {
+      field: "justificacion",
+      headerName: "Justificacion",
+      width: 250,
+      renderCell: (params) => (
+        <>
+          {params.value === null ? (
+            "No hay justificacion"
+          ) : (
+            <ExpandableCell value={params.value} />
+          )}
+        </>
+      ),
+    },
+    {
+      field: "problemas_a_resolver",
+      headerName: "Problemas a resolver",
+      width: 250,
+      renderCell: (params) => (
+        <>
+          {params.value === null ? (
+            "No hay problemas a resolver"
+          ) : (
+            <ExpandableCell value={params.value} />
+          )}
+        </>
+      ),
+    },
+    {
+      field: "diagnostico_comunitario",
+      headerName: "Diagnóstico Comunitario",
+      width: 250,
+      renderCell: (params) => (
+        <>
+          {params.value === null ? (
+            "No hay diagnóstico comunitario"
+          ) : (
+            <ExpandableCell value={params.value} />
+          )}
+        </>
+      ),
+    },
+    {
+      field: "elaborado_por",
+      headerName: "Elaborado por",
+      width: 250,
+      renderCell: (params) => (
+        <>{params.value === null ? "No hay información" : params.value}</>
+      ),
+    },
+    {
+      field: "aprobado_por",
+      headerName: "Aprobado por",
+      width: 250,
+      renderCell: (params) => (
+        <>{params.value === null ? "No hay información" : params.value}</>
+      ),
+    },
+    {
+      field: "fecha_entrega_informe",
+      headerName: "Fecha de entrega del informe",
+      width: 200,
+      renderCell: (params) => (
+        <>{params.value === null ? "No hay información" : params.value}</>
       ),
     },
     {
@@ -168,21 +408,23 @@ const Projects = () => {
         const processedData = data.map((project, index) => {
           const nombre_facultad = project.carreras_info
             ? project.carreras_info
-                .map((carrera) => carrera.nombre_facultad)
+                .map((facultad) => facultad.nombre_facultad)
                 .join(", ")
-            : "";
+            : "No hay facultad";
           const nombre_parroquia = project.ubicaciones_info
-            ? project.ubicaciones_info.flatMap((ubicacion) =>
-                ubicacion.parroquias
-                  ? ubicacion.parroquias.map(
+            ? project.ubicaciones_info.flatMap((canton) =>
+                canton.parroquias
+                  ? canton.parroquias.map(
                       (parroquia) => parroquia.nombre_parroquia
                     )
-                  : []
+                  : ""
               )
             : [];
-          const nombre_org_res_contraparte = project.org_res_contraparte
+          const nombre_org_res_contraparte = Array.isArray(
+            project.org_res_contraparte
+          )
             ? project.org_res_contraparte.map((org) => org.nombre).join(", ")
-            : "";
+            : "No hay organización contraparte";
           const responsables_contraparte = project.org_res_contraparte
             ? project.org_res_contraparte.flatMap((org) =>
                 org.responsables
@@ -193,14 +435,14 @@ const Projects = () => {
 
           return {
             id: index, // Asignar un id único basado en el índice
-            proyecto_id: project.proyecto_info?.proyecto_id,
-            nombre_proyecto: project.proyecto_info?.nombre_proyecto,
+            ...project?.proyecto_info,
             nombre_facultad,
             nombre_parroquia,
             nombre_org_res_contraparte,
             responsables_contraparte,
           };
         });
+        console.log(processedData);
         setProjects(processedData);
       })
       .catch((error) => console.error("Error fetching projects: ", error))
@@ -217,10 +459,10 @@ const Projects = () => {
           rows={projects}
           initialState={{
             pagination: {
-              paginationModel: { page: 0, pageSize: 4 },
+              paginationModel: { page: 0, pageSize: 10 },
             },
           }}
-          pageSizeOptions={[4, 10, 20]}
+          pageSizeOptions={[10, 20, 30]}
           getRowHeight={() => "auto"}
           getEstimatedRowHeight={() => 100}
           slots={{ toolbar: GridToolbar }}
@@ -268,9 +510,9 @@ const Projects = () => {
           </p>
           {/* FACULTADES Y CARRERAS */}
           <div
-            className={`${
-              selectedProject?.carreras_info ? "d-block" : "d-none"
-            }`}
+            style={{
+              display: selectedProject?.carreras_info ? "block" : "none",
+            }}
           >
             <h4>Facultades y Carreras</h4>
             <table>
@@ -299,9 +541,12 @@ const Projects = () => {
           </div>
           {/* UBICACIONES */}
           <div
-            className={`${
-              selectedProject?.ubicaciones_info?.length ? "d-block" : "d-none"
-            }`}
+            style={{
+              display:
+                selectedProject?.ubicaciones_info?.length > 0
+                  ? "block"
+                  : "none",
+            }}
           >
             <h4>Territorio</h4>
             <table>
@@ -336,9 +581,9 @@ const Projects = () => {
           </div>
           {/* ORGANIZACION RESPONSABLE CONTRAPARTE */}
           <div
-            className={`${
-              selectedProject?.org_res_contraparte ? "d-block" : "d-none"
-            }`}
+            style={{
+              display: selectedProject?.org_res_contraparte ? "block" : "none",
+            }}
           >
             <h4>Responsables Contraparte</h4>
             <table>

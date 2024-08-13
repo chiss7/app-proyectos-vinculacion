@@ -1,5 +1,5 @@
 import logo from "../assets/img/uce.png";
-import PltPrincipal from "./pltPrincipal";
+import PltPrincipal from "../components/pltPrincipal";
 
 const Principal = () => {
   return (
