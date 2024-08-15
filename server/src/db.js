@@ -5,7 +5,7 @@ export const pool = new pg.Pool({
   user: DB_USER,
   host: DB_HOST,
   password: DB_PASSWORD,
-  database: DB_DATABASE_DEV,
+  database: DB_DATABASE_PROD,
   port: DB_PORT,
   ssl: true,
   max: 20,
