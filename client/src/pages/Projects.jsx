@@ -1,4 +1,4 @@
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import { useEffect, useRef, useState } from "react";
 import { Box, Button } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -10,6 +10,8 @@ import axios from "axios";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 import ProjectInfo from "../components/ProjectInfo";
 import ExpandableCell from "../components/ExpandableCell";
+import CustomToolbar from "../components/CustomToolbar";
+import { columnNames } from "../utils/projectColumns";
 
 const Projects = () => {
   const [projects, setProjects] = useState([]);
@@ -24,9 +26,9 @@ const Projects = () => {
   const [isProjectInfoLoading, setIsProjectInfoLoading] = useState(false);
 
   const columns = [
-    { field: "proyecto_id", headerName: "ID Proyecto", width: 100 },
+    { field: columnNames.ID, headerName: "ID Proyecto", width: 100 },
     {
-      field: "nombre_proyecto",
+      field: columnNames.NOMBRE_PROYECTO,
       headerName: "Nombre del Proyecto",
       width: 250,
       renderCell: (params) => (
@@ -40,7 +42,7 @@ const Projects = () => {
       ),
     },
     {
-      field: "nombre_programa",
+      field: columnNames.NOMBRE_PROGRAMA,
       headerName: "Nombre Programa",
       width: 250,
       renderCell: (params) => (
@@ -54,7 +56,7 @@ const Projects = () => {
       ),
     },
     {
-      field: "coordinador_programa",
+      field: columnNames.COORDINADOR_PROGRAMA,
       headerName: "Coordinador",
       width: 250,
       renderCell: (params) => (
@@ -62,7 +64,7 @@ const Projects = () => {
       ),
     },
     {
-      field: "objetivo_general",
+      field: columnNames.OBJETIVO_GENERAL,
       headerName: "Objetivo General",
       width: 250,
       renderCell: (params) => (
@@ -76,7 +78,7 @@ const Projects = () => {
       ),
     },
     {
-      field: "objetivos_especificos",
+      field: columnNames.OBJETIVOS_ESPECIFICOS,
       headerName: "Objetivos Específicos",
       width: 250,
       renderCell: (params) => (
@@ -90,7 +92,7 @@ const Projects = () => {
       ),
     },
     {
-      field: "nombre_proceso_gestion",
+      field: columnNames.NOMBRE_PROCESO_GESTION,
       headerName: "Proceso Gestión",
       width: 250,
       renderCell: (params) => (
@@ -98,7 +100,7 @@ const Projects = () => {
       ),
     },
     {
-      field: "duracion",
+      field: columnNames.DURACION,
       headerName: "Duración (meses)",
       width: 150,
       renderCell: (params) => (
@@ -106,7 +108,7 @@ const Projects = () => {
       ),
     },
     {
-      field: "presupuesto_por_mes",
+      field: columnNames.PRESUPUESTO_POR_MES,
       headerName: "Presupuesto por Semestre",
       width: 200,
       renderCell: (params) => (
@@ -114,7 +116,7 @@ const Projects = () => {
       ),
     },
     {
-      field: "fecha_inicio",
+      field: columnNames.FECHA_INICIO,
       headerName: "Fecha de Inicio",
       width: 200,
       renderCell: (params) => (
@@ -122,7 +124,7 @@ const Projects = () => {
       ),
     },
     {
-      field: "fecha_finalizacion",
+      field: columnNames.FECHA_FINALIZACION,
       headerName: "Fecha de Finalización",
       width: 200,
       renderCell: (params) => (
@@ -130,12 +132,12 @@ const Projects = () => {
       ),
     },
     {
-      field: "nombre_facultad",
+      field: columnNames.NOMBRE_FACULTAD,
       headerName: "Nombre de la Facultad",
       width: 300,
     },
     {
-      field: "carreras",
+      field: columnNames.CARRERAS,
       headerName: "Carreras",
       width: 200,
       renderCell: (params) => (
@@ -149,7 +151,7 @@ const Projects = () => {
       ),
     },
     {
-      field: "cantones",
+      field: columnNames.CANTONES,
       headerName: "Cantones",
       width: 200,
       renderCell: (params) => (
@@ -159,7 +161,7 @@ const Projects = () => {
       ),
     },
     {
-      field: "nombre_parroquia",
+      field: columnNames.NOMBRE_PARROQUIA,
       headerName: "Parroquias",
       width: 200,
       renderCell: (params) => (
@@ -173,17 +175,17 @@ const Projects = () => {
       ),
     },
     {
-      field: "responsables_uce",
+      field: columnNames.RESPONSABLES_UCE,
       headerName: "Responsables Uce",
       width: 200,
     },
     {
-      field: "nombre_org_res_contraparte",
+      field: columnNames.NOMBRE_ORG_RES_CONTRAPARTE,
       headerName: "Organización Contraparte",
       width: 300,
     },
     {
-      field: "responsables_contraparte",
+      field: columnNames.RESPONSABLES_CONTRAPARTE,
       headerName: "Responsables Contraparte",
       width: 300,
       renderCell: (params) => (
@@ -194,7 +196,7 @@ const Projects = () => {
     },
 
     {
-      field: "participantes",
+      field: columnNames.PARTICIPANTES,
       headerName: "Participantes",
       width: 400,
       renderCell: (params) => (
@@ -208,7 +210,7 @@ const Projects = () => {
       ),
     },
     {
-      field: "cantidad_docentes",
+      field: columnNames.CANTIDAD_DOCENTES,
       headerName: "Cantidad Docentes",
       width: 250,
       renderCell: (params) => (
@@ -216,7 +218,7 @@ const Projects = () => {
       ),
     },
     {
-      field: "cantidad_estudiantes",
+      field: columnNames.CANTIDAD_ESTUDIANTES,
       headerName: "Cantidad Estudiantes",
       width: 250,
       renderCell: (params) => (
@@ -224,7 +226,7 @@ const Projects = () => {
       ),
     },
     {
-      field: "beneficiarios_directos",
+      field: columnNames.BENEFICIARIOS_DIRECTOS,
       headerName: "Beneficiarios Directos",
       width: 250,
       renderCell: (params) => (
@@ -238,7 +240,7 @@ const Projects = () => {
       ),
     },
     {
-      field: "beneficiarios_indirectos",
+      field: columnNames.BENEFICIARIOS_INDIRECTOS,
       headerName: "Beneficiarios Indirectos",
       width: 250,
       renderCell: (params) => (
@@ -252,7 +254,7 @@ const Projects = () => {
       ),
     },
     {
-      field: "antecedentes",
+      field: columnNames.ANTECEDENTES,
       headerName: "Antecedentes",
       width: 250,
       renderCell: (params) => (
@@ -266,7 +268,7 @@ const Projects = () => {
       ),
     },
     {
-      field: "metodologia",
+      field: columnNames.METODOLOGIA,
       headerName: "Metodología",
       width: 250,
       renderCell: (params) => (
@@ -280,7 +282,7 @@ const Projects = () => {
       ),
     },
     {
-      field: "justificacion",
+      field: columnNames.JUSTIFICACION,
       headerName: "Justificacion",
       width: 250,
       renderCell: (params) => (
@@ -294,7 +296,7 @@ const Projects = () => {
       ),
     },
     {
-      field: "problemas_a_resolver",
+      field: columnNames.PROBLEMAS_A_RESOLVER,
       headerName: "Problemas a resolver",
       width: 250,
       renderCell: (params) => (
@@ -308,7 +310,7 @@ const Projects = () => {
       ),
     },
     {
-      field: "diagnostico_comunitario",
+      field: columnNames.DIAGNOSTICO_COMUNITARIO,
       headerName: "Diagnóstico Comunitario",
       width: 250,
       renderCell: (params) => (
@@ -322,7 +324,7 @@ const Projects = () => {
       ),
     },
     {
-      field: "elaborado_por",
+      field: columnNames.ELABORADO_POR,
       headerName: "Elaborado por",
       width: 250,
       renderCell: (params) => (
@@ -330,7 +332,7 @@ const Projects = () => {
       ),
     },
     {
-      field: "aprobado_por",
+      field: columnNames.APROBADO_POR,
       headerName: "Aprobado por",
       width: 250,
       renderCell: (params) => (
@@ -338,7 +340,7 @@ const Projects = () => {
       ),
     },
     {
-      field: "fecha_entrega_informe",
+      field: columnNames.FECHA_ENTREGA_INFORME,
       headerName: "Fecha de entrega del informe",
       width: 200,
       renderCell: (params) => (
@@ -536,7 +538,7 @@ const Projects = () => {
           pageSizeOptions={[10, 20, 30]}
           getRowHeight={() => "auto"}
           getEstimatedRowHeight={() => 100}
-          slots={{ toolbar: GridToolbar }}
+          slots={{ toolbar: CustomToolbar }}
           sx={{
             "&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell": {
               py: 1,
