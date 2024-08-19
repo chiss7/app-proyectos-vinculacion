@@ -1,4 +1,5 @@
 import Projects from "./pages/Projects";
+import CreateProyectoForm from "./pages/CreateProject";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import PrivateRoute from "./components/PrivateRoute";
 import Login from "./pages/Login";
@@ -15,6 +16,9 @@ function App() {
         </Route>
         <Route path="/proyectos" element={<PrivateRoute />}>
           <Route path="/proyectos" element={<Projects />} />
+        </Route>
+        <Route path="/cproyecto" element={<PrivateRoute />}>
+          <Route path="/cproyecto" element={<CreateProyectoForm />} />
         </Route>
       </Routes>
     </Router>

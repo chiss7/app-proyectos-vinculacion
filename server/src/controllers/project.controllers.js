@@ -10,6 +10,78 @@ const ProjectController = {
       res.status(500).json({ message: "Error getting projects." });
     }
   },
+  getProjectPGestion: async (req, res) => {
+    try {
+      const { rows } = await pool.query("SELECT * FROM proceso_gestion;");
+      res.status(200).json(rows);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error getting project gestion." });
+    }
+  },
+  getProjectPImpacto: async (req, res) => {
+    try {
+      const { rows } = await pool.query("SELECT * FROM indicador_impacto;");
+      res.status(200).json(rows);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error getting project impact" });
+    }
+  },
+  getFacultades: async (req, res) => {
+    try {
+      const { rows } = await pool.query("SELECT * FROM facultad;");
+      res.status(200).json(rows);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error getting facultad" });
+    }
+  },
+  getCarrerasbyFacultad: async (req, res) => {
+    try {
+      const { rows } = await pool.query(
+        "SELECT * FROM get_carreras_by_facultad_id($1);",
+        [req.params.id]
+      );
+      res.status(200).json(rows);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error getting facultad" });
+    }
+  },
+  getProvincias: async (req, res) => {
+    try {
+      const { rows } = await pool.query("SELECT * FROM provincia;");
+      res.status(200).json(rows);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error getting provincia" });
+    }
+  },
+  getCantonesbyProvincia: async (req, res) => {
+    try {
+      const { rows } = await pool.query(
+        "SELECT * FROM get_cantones_by_provincia_id($1);",
+        [req.params.id]
+      );
+      res.status(200).json(rows);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error getting cantones" });
+    }
+  },
+  getParroquiasbyCanton: async (req, res) => {
+    try {
+      const { rows } = await pool.query(
+        "SELECT * FROM get_parroquias_by_canton_id($1);",
+        [req.params.id]
+      );
+      res.status(200).json(rows);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error getting parroquias" });
+    }
+  },
   getProjectById: async (req, res) => {
     try {
       const { rows } = await pool.query(

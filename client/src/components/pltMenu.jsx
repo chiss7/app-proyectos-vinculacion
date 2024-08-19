@@ -23,6 +23,10 @@ const Navbar = () => {
     navigate("/proyectos")
   }
 
+  const handleCrearProyecto = () => {
+    navigate("/cproyecto")
+  }
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/login');
@@ -58,7 +62,8 @@ const Navbar = () => {
               horizontal: 'left',
             }}
           >
-            <MenuItem onClick={handleVerProyectos} sx={menuItemStyle}>Ver Proyectos</MenuItem>            
+            <MenuItem onClick={handleVerProyectos} sx={menuItemStyle}>Ver Proyectos</MenuItem>
+            <MenuItem onClick={handleCrearProyecto} sx={menuItemStyle}>Crear Nuevo Proyecto</MenuItem>        
           </Menu>
 
           <Typography
