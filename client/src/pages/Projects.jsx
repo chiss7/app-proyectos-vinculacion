@@ -1,38 +1,17 @@
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import { useEffect, useRef, useState } from "react";
-import { Box, Button, Link } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import CircularProgress from "@mui/material/CircularProgress";
-import PropTypes from "prop-types";
 import Modal from "../components/Modal";
 import PltPrincipal from "../components/pltPrincipal";
 import "../styles.css";
 import axios from "axios";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
-
-// Componente ExpandableCell para manejar contenido expandible en celdas
-const ExpandableCell = ({ value }) => {
-  const [expanded, setExpanded] = useState(false);
-
-  // Asegúrate de que el valor es una cadena, si no, utiliza una cadena vacía
-  const displayValue = typeof value === "string" ? value : "";
-
-  return (
-    <div>
-      {expanded ? displayValue : displayValue.slice(0, 70)}&nbsp;
-      {displayValue.length > 70 && (
-        <Link
-          type="button"
-          component="button"
-          sx={{ fontSize: "inherit" }}
-          onClick={() => setExpanded(!expanded)}
-        >
-          {expanded ? "Ver menos" : "... Ver más"}
-        </Link>
-      )}
-    </div>
-  );
-};
+import ProjectInfo from "../components/ProjectInfo";
+import ExpandableCell from "../components/ExpandableCell";
+import CustomToolbar from "../components/CustomToolbar";
+import { columnNames } from "../utils/projectColumns";
 
 const Projects = () => {
   const [projects, setProjects] = useState([]);
@@ -46,17 +25,16 @@ const Projects = () => {
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
   const [isProjectInfoLoading, setIsProjectInfoLoading] = useState(false);
 
-  // Definición de las columnas, incluyendo las celdas expandibles
   const columns = [
-    { field: "proyecto_id", headerName: "ID Proyecto", width: 100 },
+    { field: columnNames.ID, headerName: "ID Proyecto", width: 100 },
     {
-      field: "nombre_proyecto",
+      field: columnNames.NOMBRE_PROYECTO,
       headerName: "Nombre del Proyecto",
       width: 250,
       renderCell: (params) => (
         <>
           {params.value === null ? (
-            "No hay nombre del proyecto"
+            "No especificado"
           ) : (
             <ExpandableCell value={params.value} />
           )}
@@ -64,13 +42,13 @@ const Projects = () => {
       ),
     },
     {
-      field: "nombre_programa",
+      field: columnNames.NOMBRE_PROGRAMA,
       headerName: "Nombre Programa",
       width: 250,
       renderCell: (params) => (
         <>
           {params.value === null ? (
-            "No hay nombre programa"
+            "No especificado"
           ) : (
             <ExpandableCell value={params.value} />
           )}
@@ -78,13 +56,21 @@ const Projects = () => {
       ),
     },
     {
-      field: "objetivo_general",
+      field: columnNames.COORDINADOR_PROGRAMA,
+      headerName: "Coordinador",
+      width: 250,
+      renderCell: (params) => (
+        <>{params.value === null ? "No especificado" : params.value}</>
+      ),
+    },
+    {
+      field: columnNames.OBJETIVO_GENERAL,
       headerName: "Objetivo General",
       width: 250,
       renderCell: (params) => (
         <>
           {params.value === null ? (
-            "No hay Objetivo General"
+            "No especificado"
           ) : (
             <ExpandableCell value={params.value} />
           )}
@@ -92,13 +78,13 @@ const Projects = () => {
       ),
     },
     {
-      field: "objetivos_especificos",
+      field: columnNames.OBJETIVOS_ESPECIFICOS,
       headerName: "Objetivos Específicos",
       width: 250,
       renderCell: (params) => (
         <>
           {params.value === null ? (
-            "No hay Objetivos Específicos"
+            "No especificado"
           ) : (
             <ExpandableCell value={params.value} />
           )}
@@ -106,52 +92,76 @@ const Projects = () => {
       ),
     },
     {
-      field: "nombre_proceso_gestion",
+      field: columnNames.NOMBRE_PROCESO_GESTION,
       headerName: "Proceso Gestión",
       width: 250,
       renderCell: (params) => (
-        <>{params.value === null ? "No hay duración" : params.value}</>
+        <>{params.value === null ? "No especificado" : params.value}</>
       ),
     },
     {
-      field: "duracion",
+      field: columnNames.DURACION,
       headerName: "Duración (meses)",
       width: 150,
       renderCell: (params) => (
-        <>{params.value === null ? "No hay duración" : params.value}</>
+        <>{params.value === null ? "No especificado" : params.value}</>
       ),
     },
     {
-      field: "presupuesto_por_mes",
+      field: columnNames.PRESUPUESTO_POR_MES,
       headerName: "Presupuesto por Semestre",
       width: 200,
       renderCell: (params) => (
-        <>{params.value === null ? "No hay presupuesto" : params.value}</>
+        <>{params.value === null ? "No especificado" : params.value}</>
       ),
     },
     {
-      field: "fecha_inicio",
+      field: columnNames.FECHA_INICIO,
       headerName: "Fecha de Inicio",
       width: 200,
       renderCell: (params) => (
-        <>{params.value === null ? "No hay información" : params.value}</>
+        <>{params.value === null ? "No especificado" : params.value}</>
       ),
     },
     {
-      field: "fecha_finalizacion",
+      field: columnNames.FECHA_FINALIZACION,
       headerName: "Fecha de Finalización",
       width: 200,
       renderCell: (params) => (
-        <>{params.value === null ? "No hay información" : params.value}</>
+        <>{params.value === null ? "No especificado" : params.value}</>
       ),
     },
     {
-      field: "nombre_facultad",
+      field: columnNames.NOMBRE_FACULTAD,
       headerName: "Nombre de la Facultad",
       width: 300,
     },
     {
-      field: "nombre_parroquia",
+      field: columnNames.CARRERAS,
+      headerName: "Carreras",
+      width: 200,
+      renderCell: (params) => (
+        <>
+          {params.value.length > 0 ? (
+            <ExpandableCell value={params.value.join(", ")} />
+          ) : (
+            "No especificado"
+          )}
+        </>
+      ),
+    },
+    {
+      field: columnNames.CANTONES,
+      headerName: "Cantones",
+      width: 200,
+      renderCell: (params) => (
+        <>
+          <ExpandableCell value={params.value} />
+        </>
+      ),
+    },
+    {
+      field: columnNames.NOMBRE_PARROQUIA,
       headerName: "Parroquias",
       width: 200,
       renderCell: (params) => (
@@ -159,54 +169,70 @@ const Projects = () => {
           {params.value.length > 0 ? (
             <ExpandableCell value={params.value.join(", ")} />
           ) : (
-            "No hay parroquias"
+            "No especificado"
           )}
         </>
       ),
     },
     {
-      field: "nombre_org_res_contraparte",
+      field: columnNames.RESPONSABLES_UCE,
+      headerName: "Responsables Uce",
+      width: 200,
+    },
+    {
+      field: columnNames.NOMBRE_ORG_RES_CONTRAPARTE,
       headerName: "Organización Contraparte",
       width: 300,
     },
     {
-      field: "responsables_contraparte",
+      field: columnNames.RESPONSABLES_CONTRAPARTE,
       headerName: "Responsables Contraparte",
       width: 300,
+      renderCell: (params) => (
+        <>
+          <ExpandableCell value={params.value} />
+        </>
+      ),
+    },
+
+    {
+      field: columnNames.PARTICIPANTES,
+      headerName: "Participantes",
+      width: 400,
       renderCell: (params) => (
         <>
           {params.value.length > 0 ? (
             <ExpandableCell value={params.value.join(", ")} />
           ) : (
-            "No hay responsables contraparte"
+            "No especificado"
           )}
         </>
       ),
     },
     {
-      field: "cantidad_docentes",
+      field: columnNames.CANTIDAD_DOCENTES,
       headerName: "Cantidad Docentes",
       width: 250,
       renderCell: (params) => (
-        <>{params.value === null ? "No hay información" : params.value}</>
+        <>{params.value === null ? "No especificado" : params.value}</>
       ),
     },
     {
-      field: "cantidad_estudiantes",
+      field: columnNames.CANTIDAD_ESTUDIANTES,
       headerName: "Cantidad Estudiantes",
       width: 250,
       renderCell: (params) => (
-        <>{params.value === null ? "No hay información" : params.value}</>
+        <>{params.value === null ? "No especificado" : params.value}</>
       ),
     },
     {
-      field: "beneficiarios_directos",
+      field: columnNames.BENEFICIARIOS_DIRECTOS,
       headerName: "Beneficiarios Directos",
       width: 250,
       renderCell: (params) => (
         <>
           {params.value === null ? (
-            "No hay beneficiarios directos"
+            "No especificado"
           ) : (
             <ExpandableCell value={params.value} />
           )}
@@ -214,13 +240,13 @@ const Projects = () => {
       ),
     },
     {
-      field: "beneficiarios_indirectos",
+      field: columnNames.BENEFICIARIOS_INDIRECTOS,
       headerName: "Beneficiarios Indirectos",
       width: 250,
       renderCell: (params) => (
         <>
           {params.value === null ? (
-            "No hay beneficiarios indirectos"
+            "No especificado"
           ) : (
             <ExpandableCell value={params.value} />
           )}
@@ -228,13 +254,13 @@ const Projects = () => {
       ),
     },
     {
-      field: "antecedentes",
+      field: columnNames.ANTECEDENTES,
       headerName: "Antecedentes",
       width: 250,
       renderCell: (params) => (
         <>
           {params.value === null ? (
-            "No hay antecedentes"
+            "No especificado"
           ) : (
             <ExpandableCell value={params.value} />
           )}
@@ -242,13 +268,13 @@ const Projects = () => {
       ),
     },
     {
-      field: "metodologia",
+      field: columnNames.METODOLOGIA,
       headerName: "Metodología",
       width: 250,
       renderCell: (params) => (
         <>
           {params.value === null ? (
-            "No hay metodología"
+            "No especificado"
           ) : (
             <ExpandableCell value={params.value} />
           )}
@@ -256,13 +282,13 @@ const Projects = () => {
       ),
     },
     {
-      field: "justificacion",
+      field: columnNames.JUSTIFICACION,
       headerName: "Justificacion",
       width: 250,
       renderCell: (params) => (
         <>
           {params.value === null ? (
-            "No hay justificacion"
+            "No especificado"
           ) : (
             <ExpandableCell value={params.value} />
           )}
@@ -270,13 +296,13 @@ const Projects = () => {
       ),
     },
     {
-      field: "problemas_a_resolver",
+      field: columnNames.PROBLEMAS_A_RESOLVER,
       headerName: "Problemas a resolver",
       width: 250,
       renderCell: (params) => (
         <>
           {params.value === null ? (
-            "No hay problemas a resolver"
+            "No especificado"
           ) : (
             <ExpandableCell value={params.value} />
           )}
@@ -284,13 +310,13 @@ const Projects = () => {
       ),
     },
     {
-      field: "diagnostico_comunitario",
+      field: columnNames.DIAGNOSTICO_COMUNITARIO,
       headerName: "Diagnóstico Comunitario",
       width: 250,
       renderCell: (params) => (
         <>
           {params.value === null ? (
-            "No hay diagnóstico comunitario"
+            "No especificado"
           ) : (
             <ExpandableCell value={params.value} />
           )}
@@ -298,27 +324,27 @@ const Projects = () => {
       ),
     },
     {
-      field: "elaborado_por",
+      field: columnNames.ELABORADO_POR,
       headerName: "Elaborado por",
       width: 250,
       renderCell: (params) => (
-        <>{params.value === null ? "No hay información" : params.value}</>
+        <>{params.value === null ? "No especificado" : params.value}</>
       ),
     },
     {
-      field: "aprobado_por",
+      field: columnNames.APROBADO_POR,
       headerName: "Aprobado por",
       width: 250,
       renderCell: (params) => (
-        <>{params.value === null ? "No hay información" : params.value}</>
+        <>{params.value === null ? "No especificado" : params.value}</>
       ),
     },
     {
-      field: "fecha_entrega_informe",
+      field: columnNames.FECHA_ENTREGA_INFORME,
       headerName: "Fecha de entrega del informe",
       width: 200,
       renderCell: (params) => (
-        <>{params.value === null ? "No hay información" : params.value}</>
+        <>{params.value === null ? "No especificado" : params.value}</>
       ),
     },
     {
@@ -399,50 +425,96 @@ const Projects = () => {
     setIsDeleteModalOpen(false);
   };
 
-  // Efecto para cargar datos desde la API
   useEffect(() => {
     setIsProjectsLoading(true);
     fetch("http://localhost:3000/api/projects/all")
       .then((response) => response.json())
       .then((data) => {
         const processedData = data.map((project, index) => {
-          const nombre_facultad = project.carreras_info
+          const nombre_facultad = Array.isArray(project.carreras_info)
             ? project.carreras_info
                 .map((facultad) => facultad.nombre_facultad)
                 .join(", ")
-            : "No hay facultad";
+            : "No especificado";
+
+          const carreras = Array.isArray(project.carreras_info)
+            ? project.carreras_info.flatMap((facultad) =>
+                Array.isArray(facultad.carreras) && facultad.carreras.length > 0
+                  ? facultad.carreras.map((carrera) => carrera.nombre_carrera)
+                  : []
+              )
+            : [];
+
+          const cantones = Array.isArray(project.ubicaciones_info)
+            ? project.ubicaciones_info
+                .map((canton) => canton.nombre_canton)
+                .join(", ")
+            : "No especificado";
+
           const nombre_parroquia = project.ubicaciones_info
             ? project.ubicaciones_info.flatMap((canton) =>
-                canton.parroquias
+                Array.isArray(canton.parroquias) && canton.parroquias.length > 0
                   ? canton.parroquias.map(
                       (parroquia) => parroquia.nombre_parroquia
                     )
-                  : ""
+                  : []
               )
             : [];
+
           const nombre_org_res_contraparte = Array.isArray(
             project.org_res_contraparte
           )
             ? project.org_res_contraparte.map((org) => org.nombre).join(", ")
-            : "No hay organización contraparte";
+            : "No especificado";
+
           const responsables_contraparte = project.org_res_contraparte
-            ? project.org_res_contraparte.flatMap((org) =>
-                org.responsables
-                  ? org.responsables.map((responsable) => responsable.nombres)
-                  : []
-              )
-            : [];
+            ? project.org_res_contraparte
+                .map((org) => {
+                  if (org.responsables && org.responsables.length > 0) {
+                    return org.responsables
+                      .map((responsable) => responsable.nombres)
+                      .join(", ");
+                  } else {
+                    return "No especificado";
+                  }
+                })
+                .join(", ")
+            : "No especificado";
+
+          project.proyecto_info.participantes =
+            Array.isArray(project.proyecto_info.participantes) &&
+            project.proyecto_info.participantes.length > 0
+              ? project.proyecto_info.participantes.map(
+                  (participante) =>
+                    `${participante.nombres}: ${
+                      participante.horas_asignadas
+                        ? participante.horas_asignadas
+                        : "No especifica"
+                    } horas`
+                )
+              : [];
+
+          project.proyecto_info.responsables_uce =
+            Array.isArray(project.proyecto_info.responsables_uce) &&
+            project.proyecto_info.responsables_uce.length > 0
+              ? project.proyecto_info.responsables_uce
+                  .map(
+                    (responsable) => responsable.nombre && responsable.nombre
+                  )
+                  .join(", ")
+              : "No especificado";
 
           return {
             id: index, // Asignar un id único basado en el índice
             ...project?.proyecto_info,
             nombre_facultad,
+            carreras,
+            cantones,
             nombre_parroquia,
             nombre_org_res_contraparte,
             responsables_contraparte,
           };
         });
-        console.log(processedData);
         setProjects(processedData);
       })
       .catch((error) => console.error("Error fetching projects: ", error))
@@ -457,6 +529,7 @@ const Projects = () => {
         <DataGrid
           columns={columns}
           rows={projects}
+          checkboxSelection
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 10 },
@@ -465,7 +538,7 @@ const Projects = () => {
           pageSizeOptions={[10, 20, 30]}
           getRowHeight={() => "auto"}
           getEstimatedRowHeight={() => 100}
-          slots={{ toolbar: GridToolbar }}
+          slots={{ toolbar: CustomToolbar }}
           sx={{
             "&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell": {
               py: 1,
@@ -482,154 +555,7 @@ const Projects = () => {
 
       {isModalOpen && (
         <Modal onClose={handleCloseModal}>
-          <p>
-            <strong>ID: </strong>
-            {selectedProject?.proyecto_info.proyecto_id}
-          </p>
-          <p>
-            <strong>Nombre del Programa: </strong>
-            {selectedProject?.proyecto_info.nombre_programa
-              ? selectedProject?.proyecto_info.nombre_programa
-              : "No especificado"}
-          </p>
-          <p>
-            <strong>Coordinador: </strong>
-            {selectedProject?.proyecto_info.coordinador_programa
-              ? selectedProject?.proyecto_info.coordinador_programa
-              : "No especificado"}
-          </p>
-          <p>
-            <strong>Nombre del Proyecto: </strong>
-            {selectedProject?.proyecto_info.nombre_proyecto
-              ? selectedProject?.proyecto_info.nombre_proyecto
-              : "No especificado"}
-          </p>
-          <p>
-            <strong>Objetivo General: </strong>
-            {selectedProject?.proyecto_info.objetivo_general}
-          </p>
-          {/* FACULTADES Y CARRERAS */}
-          <div
-            style={{
-              display: selectedProject?.carreras_info ? "block" : "none",
-            }}
-          >
-            <h4>Facultades y Carreras</h4>
-            <table>
-              <thead>
-                <tr>
-                  <th>Nombre de la Facultad</th>
-                  <th>Nombre de la Carrera</th>
-                </tr>
-              </thead>
-              <tbody>
-                {selectedProject?.carreras_info?.map((facultad) =>
-                  facultad.carreras.map((carrera) => (
-                    <tr key={carrera.id_carrera}>
-                      {carrera.id_carrera ===
-                      facultad.carreras[0].id_carrera ? (
-                        <td rowSpan={facultad.carreras.length}>
-                          {facultad.nombre_facultad}
-                        </td>
-                      ) : null}
-                      <td>{carrera.nombre_carrera}</td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-          {/* UBICACIONES */}
-          <div
-            style={{
-              display:
-                selectedProject?.ubicaciones_info?.length > 0
-                  ? "block"
-                  : "none",
-            }}
-          >
-            <h4>Territorio</h4>
-            <table>
-              <thead>
-                <tr>
-                  <th>Cantón</th>
-                  <th>Parroquia</th>
-                </tr>
-              </thead>
-              <tbody>
-                {selectedProject?.ubicaciones_info?.map((canton) =>
-                  canton.parroquias.length > 0 ? (
-                    canton.parroquias.map((parroquia, index) => (
-                      <tr key={parroquia.id_parroquia}>
-                        {index === 0 ? (
-                          <td rowSpan={canton.parroquias.length}>
-                            {canton.nombre_canton}
-                          </td>
-                        ) : null}
-                        <td>{parroquia.nombre_parroquia}</td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr key={canton.id_canton}>
-                      <td>{canton.nombre_canton}</td>
-                      <td>No hay parroquias</td>
-                    </tr>
-                  )
-                )}
-              </tbody>
-            </table>
-          </div>
-          {/* ORGANIZACION RESPONSABLE CONTRAPARTE */}
-          <div
-            style={{
-              display: selectedProject?.org_res_contraparte ? "block" : "none",
-            }}
-          >
-            <h4>Responsables Contraparte</h4>
-            <table>
-              <thead>
-                <tr>
-                  <th>Nombre de la Organización</th>
-                  <th>Responsable</th>
-                  <th>Cargo</th>
-                  <th>Dirección</th>
-                  <th>Teléfono Celular</th>
-                  <th>Teléfono Convencional</th>
-                  <th>Correo Electrónico</th>
-                </tr>
-              </thead>
-              <tbody>
-                {selectedProject?.org_res_contraparte?.map((org) =>
-                  org.responsables.map((resp, index) => (
-                    <tr key={resp.id_responsable_contraparte}>
-                      {index === 0 ? (
-                        <>
-                          <td rowSpan={org.responsables.length}>
-                            {org.nombre}
-                          </td>
-                          <td>{resp.nombres}</td>
-                          <td>{resp.cargo}</td>
-                          <td>{resp.direccion}</td>
-                          <td>{resp.tlf_celular}</td>
-                          <td>{resp.tlf_convencional}</td>
-                          <td>{resp.correo_electronico}</td>
-                        </>
-                      ) : (
-                        <tr key={resp.id_responsable_contraparte}>
-                          <td>{resp.nombres}</td>
-                          <td>{resp.cargo}</td>
-                          <td>{resp.direccion}</td>
-                          <td>{resp.tlf_celular}</td>
-                          <td>{resp.tlf_convencional}</td>
-                          <td>{resp.correo_electronico}</td>
-                        </tr>
-                      )}
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+          <ProjectInfo selectedProject={selectedProject} />
         </Modal>
       )}
 
@@ -643,10 +569,6 @@ const Projects = () => {
       )}
     </PltPrincipal>
   );
-};
-
-ExpandableCell.propTypes = {
-  value: PropTypes.string,
 };
 
 export default Projects;
