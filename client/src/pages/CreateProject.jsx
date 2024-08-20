@@ -8,6 +8,9 @@ import AddIcon from "@mui/icons-material/Add";
 import Divider from "@mui/material/Divider";
 
 const CreateProyectoForm = () => {
+  const [prefijo, setPrefijo] = useState('');
+  const [idProyecto, setIdProyecto] = useState('');
+
   const [procesosGestion, setProcesosGestion] = useState([]);
   const [indicadoresImpacto, setIndicadoresImpacto] = useState([]);
   const [facultades, setFacultades] = useState([]);
@@ -144,6 +147,24 @@ const CreateProyectoForm = () => {
       });
     });
   }, [cantonesByProvincia]);
+
+  const handlePrefijoChange = async (e) => {
+    const nuevoPrefijo = e.target.value.toUpperCase(); // Convertir a mayúsculas si es necesario
+    setPrefijo(nuevoPrefijo);
+
+    if (nuevoPrefijo.length > 0) {
+      try {
+        const response = await axios.get(`/api/obtener-siguiente-id/${nuevoPrefijo}`);
+        setIdProyecto(response.data.siguiente_id);
+      } catch (error) {
+        console.error('Error al obtener el siguiente ID', error);
+      }
+    } else {
+      setIdProyecto('');
+    }
+  };
+
+
 
   const handleFacultadChange = (index, value) => {
     setValue(`facultades.${index}.id_facultad`, value);
@@ -293,6 +314,7 @@ const CreateProyectoForm = () => {
   return (
     <PltPrincipal>
       <form onSubmit={handleSubmit(onSubmit)}>
+        
         <Box minWidth={500} marginTop={2} marginBottom={2}>
           <Button
             type="button"
@@ -399,6 +421,23 @@ const CreateProyectoForm = () => {
             </div>
           ))}
         </Box>
+        <Divider />
+        <div>
+          <label>
+            Prefijo del Proyecto:
+            <input
+              type="text"
+              value={prefijo}
+              onChange={handlePrefijoChange}
+              maxLength={3} // Si deseas limitar el prefijo a una longitud específica
+            />
+          </label>
+          <br />
+          <label>
+            ID del Proyecto:
+            <input type="text" value={idProyecto} readOnly />
+          </label>
+        </div>
         <Divider />
         <Box minWidth={500} marginTop={2} marginBottom={2}>
           <Button
@@ -792,11 +831,6 @@ const CreateProyectoForm = () => {
           {errors.fecha_entrega_informe && (
             <span>Este campo es obligatorio</span>
           )}
-        </div>
-
-        <div>
-          <label>Observaciones</label>
-          <textarea {...register("observaciones")} />
         </div>
 
         <button type="submit">Crear Proyecto</button>

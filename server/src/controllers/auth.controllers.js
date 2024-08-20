@@ -5,8 +5,8 @@ import jwt from "jsonwebtoken";
 const users = [
   {
     id: 1,
-    username: "marce",
-    password: "$2a$12$R3aQ8dpQBZnCXKh6tQnj/e5/V68C2gn1DBD6kt73kZgPWhHmesJ6O", // hashed 'marce'
+    username: "vinculacion",
+    password: "$2a$12$VvPd9yM/34sWjqDfxT1zN.PdkAUd7JafjNUMTxvgsnvMt2VIW6FBW", // hashed bcrypt 'vinculacion2024'
   },
 ];
 
