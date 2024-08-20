@@ -8,8 +8,8 @@ import AddIcon from "@mui/icons-material/Add";
 import Divider from "@mui/material/Divider";
 
 const CreateProyectoForm = () => {
-  const [prefijo, setPrefijo] = useState('');
-  const [idProyecto, setIdProyecto] = useState('');
+  const [prefijo, setPrefijo] = useState("");
+  const [idProyecto, setIdProyecto] = useState("");
 
   const [procesosGestion, setProcesosGestion] = useState([]);
   const [indicadoresImpacto, setIndicadoresImpacto] = useState([]);
@@ -151,20 +151,20 @@ const CreateProyectoForm = () => {
   const handlePrefijoChange = async (e) => {
     const nuevoPrefijo = e.target.value.toUpperCase(); // Convertir a mayúsculas si es necesario
     setPrefijo(nuevoPrefijo);
-
-    if (nuevoPrefijo.length > 0) {
+    console.log(nuevoPrefijo);
+    if (nuevoPrefijo.length > 2) {
       try {
-        const response = await axios.get(`/api/obtener-siguiente-id/${nuevoPrefijo}`);
-        setIdProyecto(response.data.siguiente_id);
+        const response = await axios.get(
+          `http://localhost:3000/api/projects/next-id/${nuevoPrefijo}`
+        );
+        setIdProyecto(response.data);
       } catch (error) {
-        console.error('Error al obtener el siguiente ID', error);
+        console.error("Error al obtener el siguiente ID", error);
       }
     } else {
-      setIdProyecto('');
+      setIdProyecto("");
     }
   };
-
-
 
   const handleFacultadChange = (index, value) => {
     setValue(`facultades.${index}.id_facultad`, value);
@@ -304,17 +304,20 @@ const CreateProyectoForm = () => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await axios.post("http://localhost:5000/proyecto", data);
+      console.log(data);
+      const response = await axios.post(
+        "http://localhost:3000/api/projects",
+        data
+      );
       console.log("Proyecto creado:", response.data);
     } catch (error) {
       console.error("Error al crear el proyecto:", error);
     }
   };
-  console.log(provinciasValues);
+  console.log(facultadesValues);
   return (
     <PltPrincipal>
       <form onSubmit={handleSubmit(onSubmit)}>
-        
         <Box minWidth={500} marginTop={2} marginBottom={2}>
           <Button
             type="button"
@@ -435,7 +438,7 @@ const CreateProyectoForm = () => {
           <br />
           <label>
             ID del Proyecto:
-            <input type="text" value={idProyecto} readOnly />
+            <input {...register("id")} type="text" value={idProyecto} readOnly />
           </label>
         </div>
         <Divider />

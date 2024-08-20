@@ -125,8 +125,116 @@ const ProjectController = {
       res.status(500).json({ message: "Error getting project." });
     }
   },
-  createProject: (req, res) => {
-    res.send("Create project!");
+  getNextProjectId: async (req, res) => {
+    const { prefijo } = req.params;
+    try {
+      const result = await pool.query(
+        "SELECT obtener_siguiente_id_proyecto($1) AS siguiente_id",
+        [prefijo]
+      );
+      res.status(200).json(result.rows[0].siguiente_id);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Error getting next id.");
+    }
+  },
+  createProject: async (req, res) => {
+    const {
+      id,
+      nombre_programa,
+      coordinador_programa,
+      nombre_proyecto,
+      nombre_proyecto_corto,
+      objetivo_general,
+      objetivos_especificos,
+      id_proceso_gestion,
+      id_indicador_impacto,
+      duracion,
+      fecha_inicio,
+      fecha_finalizacion,
+      presupuesto_por_ano,
+      presupuesto_por_mes,
+      cantidad_docentes,
+      cantidad_estudiantes,
+      diagnostico_comunitario,
+      antecedentes,
+      justificacion,
+      metodologia,
+      beneficiarios_directos,
+      beneficiarios_indirectos,
+      problemas_a_resolver,
+      elaborado_por,
+      aprobado_por,
+      fecha_entrega_informe,
+      facultades,
+      provincias,
+    } = req.body;
+
+    // Convertir IDs de facultades a enteros
+    const facultadesConvertidas = facultades.map((facultad) => ({
+      id_facultad: parseInt(facultad.id_facultad, 10),
+      carreras: facultad.carreras.map((carrera) => parseInt(carrera, 10)),
+    }));
+
+    // Convertir IDs de provincias, cantones y parroquias a enteros
+    const provinciasConvertidas = provincias.map((provincia) => ({
+      id_provincia: parseInt(provincia.id_provincia, 10),
+      cantones: provincia.cantones.map((canton) => ({
+        id_canton: parseInt(canton.id_canton, 10),
+        parroquias: canton.parroquias.map((parroquia) =>
+          parseInt(parroquia, 10)
+        ),
+      })),
+    }));
+
+    console.log(facultadesConvertidas);
+    console.log(provinciasConvertidas);
+
+    try {
+      await pool.query(
+        `
+            SELECT insert_proyecto(
+                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 
+                $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, 
+                $21, $22, $23, $24, $25, $26, $27, $28
+            )
+        `,
+        [
+          id,
+          nombre_programa,
+          coordinador_programa,
+          nombre_proyecto,
+          nombre_proyecto_corto,
+          objetivo_general,
+          objetivos_especificos,
+          id_proceso_gestion,
+          id_indicador_impacto,
+          duracion,
+          fecha_inicio,
+          fecha_finalizacion,
+          presupuesto_por_ano,
+          presupuesto_por_mes,
+          cantidad_docentes,
+          cantidad_estudiantes,
+          diagnostico_comunitario,
+          antecedentes,
+          justificacion,
+          metodologia,
+          beneficiarios_directos,
+          beneficiarios_indirectos,
+          problemas_a_resolver,
+          elaborado_por,
+          aprobado_por,
+          fecha_entrega_informe,
+          JSON.stringify(facultadesConvertidas),
+          JSON.stringify(provinciasConvertidas),
+        ]
+      );
+      res.status(200).send("Proyecto insertado correctamente");
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Error al insertar el proyecto");
+    }
   },
   deleteProjectById: async (req, res) => {
     try {

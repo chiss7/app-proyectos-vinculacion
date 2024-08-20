@@ -13,10 +13,9 @@ router.get("/carrera/:id",ProjectController.getCarrerasbyFacultad);
 router.get("/provincia", ProjectController.getProvincias);
 router.get("/canton/:id",ProjectController.getCantonesbyProvincia);
 router.get("/parroquia/:id",ProjectController.getParroquiasbyCanton);
-
+router.get("/next-id/:prefijo", ProjectController.getNextProjectId);
 
 router.get("/:id", ProjectController.getProjectById);
-
 
 router.get("/all-info/:id", ProjectController.getAllInfoProjectById);
 
